@@ -1,6 +1,6 @@
 #!/bin/sh
 
-./start_php-fpm5.sh -D
+./start_php-fpm.sh -D
 status=$?
 if [ $status -ne 0 ]; then
   echo "php-fpm5 Failed: $status"
