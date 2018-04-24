@@ -3,7 +3,7 @@
 ./start_php-fpm.sh -D
 status=$?
 if [ $status -ne 0 ]; then
-  echo "php-fpm5 Failed: $status"
+  echo "php-fpm Failed: $status"
   exit $status
   else echo "Starting PHP-FPM: OK"
 fi
