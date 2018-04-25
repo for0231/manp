@@ -105,5 +105,5 @@ COPY ./bin/wrapper.sh /wrapper.sh
 
 RUN chmod +x /start_nginx.sh /start_php-fpm.sh /wrapper.sh
 
-EXPOSE 80 443 3306
+EXPOSE 80 443
 CMD ["/wrapper.sh"]
