@@ -16,3 +16,5 @@ services:
       - MYSQL_DATABASE=drupal
       - MYSQL_USER=drupal
       - MYSQL_PASSWORD=drupal
+    volumes:
+      - ./data:/var/lib/mysql
