@@ -5,9 +5,9 @@ RUN apk update \
     && adduser -D -u 1000 -g 'www' www \
     && mkdir /www \
     && chown -R www:www /var/lib/nginx \
-    && chown -R www:www /www \
-    && rm -rf /etc/nginx/nginx.conf \
-    && apk add mariadb mariadb-client
+    && chown -R www:www /www
+#    && rm -rf /etc/nginx/nginx.conf \
+#    && apk add mariadb mariadb-client
 
 
 ENV PHP_FPM_USER="www"
@@ -68,6 +68,7 @@ RUN apk add curl \
     php7-session \
     php7-simplexml \
     php7-opcache \
+    supervisor \
     composer
 
 RUN sed -i "s|;listen.owner\s*=\s*nobody|listen.owner = ${PHP_FPM_USER}|g" /etc/php7/php-fpm.conf \
@@ -104,13 +105,14 @@ COPY index.php /www/index.php
 COPY ./bin/start_nginx.sh /start_nginx.sh
 COPY ./bin/start_php-fpm.sh /start_php-fpm.sh
 COPY ./bin/wrapper.sh /wrapper.sh
-ADD ./conf/my.cnf /etc/mysql/my.cnf
+#COPY ./conf/my.cnf /etc/mysql/my.cnf
+#COPY ./conf/supervisord.conf /etc/supervisord.conf
 
-RUN sed -Ei 's/^(bind-address|log)/#&/' /etc/mysql/my.cnf && \
+#RUN sed -Ei 's/^(bind-address|log)/#&/' /etc/mysql/my.cnf && \
     # don't reverse lookup hostnames, they are usually another container
-    sed -i '/^\[mysqld]$/a skip-host-cache\nskip-name-resolve' /etc/mysql/my.cnf && \
-    # always run as user mysql
-    sed -i '/^\[mysqld]$/a user=mysql' /etc/mysql/my.cnf
+#    sed -i '/^\[mysqld]$/a skip-host-cache\nskip-name-resolve' /etc/mysql/my.cnf && \
+#    # always run as user mysql
+#    sed -i '/^\[mysqld]$/a user=mysql' /etc/mysql/my.cnf
 
 RUN chmod +x /start_nginx.sh /start_php-fpm.sh /wrapper.sh
 

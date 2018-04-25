@@ -1,0 +1,22 @@
+version: '3.1'
+services:
+  bekker:
+    image: cobers/bekker
+    container_name: bekker
+    restart: unless-stopped
+    volumes:
+      - ../../drupal:/www
+    ports:
+      - 8686:80
+    links:
+      - mysql
+    depends_on:
+      - mysql
+  mysql:
+    image: mariadb:10.1
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=drupal
+      - MYSQL_USER=drupal
+      - MYSQL_PASSWORD=drupal
