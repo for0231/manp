@@ -6,7 +6,9 @@ RUN apk update \
     && mkdir /www \
     && chown -R www:www /var/lib/nginx \
     && chown -R www:www /www \
-    && rm -rf /etc/nginx/nginx.conf
+    && rm -rf /etc/nginx/nginx.conf \
+    && apk add mariadb mariadb-client
+
 
 ENV PHP_FPM_USER="www"
 ENV PHP_FPM_GROUP="www"
@@ -20,6 +22,13 @@ ENV PHP_DISPLAY_STARTUP_ERRORS="On"
 ENV PHP_ERROR_REPORTING="E_COMPILE_ERROR\|E_RECOVERABLE_ERROR\|E_ERROR\|E_CORE_ERROR"
 ENV PHP_CGI_FIX_PATHINFO=0
 ENV TIMEZONE="Asia/Shanghai"
+# mysql
+ENV LANG="en_US.UTF-8" \
+    LC_ALL="en_US.UTF-8" \
+    LANGUAGE="en_US.UTF-8" \
+    DB_USER="admin" \
+    DB_PASS="password" \
+    TERM="xterm"
 
 RUN apk add curl \
     ssmtp \
@@ -35,9 +44,9 @@ RUN apk add curl \
     php7-dom \
     php7-pdo \
     php7-zip \
-#    php7-mysql \
     php7-mysqli \
     php7-mysqlnd \
+    php7-mbstring \
     php7-sqlite3 \
     php7-pdo_pgsql \
     php7-bcmath \
@@ -48,11 +57,18 @@ RUN apk add curl \
     php7-gettext \
     php7-xmlreader \
     php7-xmlrpc \
+    php7-xml \
     php7-bz2 \
     php7-iconv \
     php7-pdo_dblib \
     php7-curl \
-    php7-ctype
+    php7-apcu \
+    php7-ctype \
+    php7-tokenizer \
+    php7-session \
+    php7-simplexml \
+    php7-opcache \
+    composer
 
 RUN sed -i "s|;listen.owner\s*=\s*nobody|listen.owner = ${PHP_FPM_USER}|g" /etc/php7/php-fpm.conf \
     && sed -i "s|;listen.group\s*=\s*nobody|listen.group = ${PHP_FPM_GROUP}|g" /etc/php7/php-fpm.conf \
@@ -81,13 +97,22 @@ RUN rm -rf /etc/localtime \
     && echo 'sendmail_path = "/usr/sbin/ssmtp -t "' > /etc/php7/conf.d/mail.ini \
     && sed -i 's/mailhub=mail/mailhub=mail.domain.com\:81/g' /etc/ssmtp/ssmtp.conf
 
+
+
 COPY ./conf/nginx.conf /etc/nginx/nginx.conf
 COPY index.php /www/index.php
-COPY test.html /www/test.html
 COPY ./bin/start_nginx.sh /start_nginx.sh
 COPY ./bin/start_php-fpm.sh /start_php-fpm.sh
 COPY ./bin/wrapper.sh /wrapper.sh
+ADD ./conf/my.cnf /etc/mysql/my.cnf
+
+RUN sed -Ei 's/^(bind-address|log)/#&/' /etc/mysql/my.cnf && \
+    # don't reverse lookup hostnames, they are usually another container
+    sed -i '/^\[mysqld]$/a skip-host-cache\nskip-name-resolve' /etc/mysql/my.cnf && \
+    # always run as user mysql
+    sed -i '/^\[mysqld]$/a user=mysql' /etc/mysql/my.cnf
 
 RUN chmod +x /start_nginx.sh /start_php-fpm.sh /wrapper.sh
 
+EXPOSE 80 443 3306
 CMD ["/wrapper.sh"]
