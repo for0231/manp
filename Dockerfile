@@ -94,14 +94,7 @@ COPY index.php /www/index.php
 COPY ./bin/start_nginx.sh /start_nginx.sh
 COPY ./bin/start_php-fpm.sh /start_php-fpm.sh
 COPY ./bin/wrapper.sh /wrapper.sh
-#COPY ./conf/my.cnf /etc/mysql/my.cnf
-#COPY ./conf/supervisord.conf /etc/supervisord.conf
 
-#RUN sed -Ei 's/^(bind-address|log)/#&/' /etc/mysql/my.cnf && \
-    # don't reverse lookup hostnames, they are usually another container
-#    sed -i '/^\[mysqld]$/a skip-host-cache\nskip-name-resolve' /etc/mysql/my.cnf && \
-#    # always run as user mysql
-#    sed -i '/^\[mysqld]$/a user=mysql' /etc/mysql/my.cnf
 
 RUN chmod +x /start_nginx.sh /start_php-fpm.sh /wrapper.sh
 
