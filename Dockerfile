@@ -1,17 +1,10 @@
 FROM alpine:edge
 
 RUN apk update \
-    && apk add nginx \
-    && adduser -D -u 1000 -g 'www' www \
-    && mkdir /www \
-    && chown -R www:www /var/lib/nginx \
-    && chown -R www:www /www
-#    && rm -rf /etc/nginx/nginx.conf \
-#    && apk add mariadb mariadb-client
+    && apk add nginx
 
-
-ENV PHP_FPM_USER="www"
-ENV PHP_FPM_GROUP="www"
+ENV PHP_FPM_USER="nginx"
+ENV PHP_FPM_GROUP="nginx"
 ENV PHP_FPM_LISTEN_MODE="0660"
 ENV PHP_MEMORY_LIMIT="512M"
 ENV PHP_MAX_UPLOAD="50M"
@@ -26,8 +19,6 @@ ENV TIMEZONE="Asia/Shanghai"
 ENV LANG="en_US.UTF-8" \
     LC_ALL="en_US.UTF-8" \
     LANGUAGE="en_US.UTF-8" \
-    DB_USER="admin" \
-    DB_PASS="password" \
     TERM="xterm"
 
 RUN apk add curl \
@@ -97,8 +88,6 @@ RUN rm -rf /etc/localtime \
     && sed -i "s|;*date.timezone =.*|date.timezone = ${TIMEZONE}|i" /etc/php7/php.ini \
     && echo 'sendmail_path = "/usr/sbin/ssmtp -t "' > /etc/php7/conf.d/mail.ini \
     && sed -i 's/mailhub=mail/mailhub=mail.domain.com\:81/g' /etc/ssmtp/ssmtp.conf
-
-
 
 COPY ./conf/nginx.conf /etc/nginx/nginx.conf
 COPY index.php /www/index.php
