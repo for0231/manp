@@ -1,7 +1,7 @@
 FROM alpine:edge
 
 RUN apk update \
-    && apk add nginx
+    && apk add nginx git
 
 ENV PHP_FPM_USER="nginx"
 ENV PHP_FPM_GROUP="nginx"
@@ -25,40 +25,41 @@ RUN apk add curl \
     ssmtp \
     tzdata \
     php7 \
-    php7-fpm \
-    php7-mcrypt \
-    php7-soap \
-    php7-openssl \
-    php7-gmp \
-    php7-pdo_odbc \
-    php7-json \
+    php7-apcu \
+    php7-bcmath \
+    php7-bz2 \
+    php7-curl \
+    php7-ctype \
     php7-dom \
-    php7-pdo \
-    php7-zip \
+    php7-fpm \
+    php7-gd \
+    php7-gettext \
+    php7-gmp \
+    php7-iconv \
+    php7-json \
+    php7-mcrypt \
     php7-mysqli \
     php7-mysqlnd \
     php7-mbstring \
-    php7-sqlite3 \
-    php7-pdo_pgsql \
-    php7-bcmath \
-    php7-gd \
     php7-odbc \
+    php7-opcache \
+    php7-openssl \
+    php7-pdo \
     php7-pdo_mysql \
+    php7-pdo_pgsql \
     php7-pdo_sqlite \
-    php7-gettext \
+    php7-pdo_dblib \
+    php7-pdo_odbc \
+    php7-session \
+    php7-simplexml \
+    php7-soap \
+    php7-sqlite3 \
+    php7-tokenizer \
+    php7-xmlwriter \
     php7-xmlreader \
     php7-xmlrpc \
     php7-xml \
-    php7-bz2 \
-    php7-iconv \
-    php7-pdo_dblib \
-    php7-curl \
-    php7-apcu \
-    php7-ctype \
-    php7-tokenizer \
-    php7-session \
-    php7-simplexml \
-    php7-opcache \
+    php7-zip \
     supervisor \
     composer
 
@@ -95,8 +96,21 @@ COPY ./bin/start_nginx.sh /start_nginx.sh
 COPY ./bin/start_php-fpm.sh /start_php-fpm.sh
 COPY ./bin/wrapper.sh /wrapper.sh
 
-
 RUN chmod +x /start_nginx.sh /start_php-fpm.sh /wrapper.sh
+
+# Drupal
+RUN rm -rf /www
+RUN git clone -b 8.6.x git://git.drupal.org/project/drupal.git /www
+WORKDIR /www
+ENV COMPOSER_PROCESS_TIMEOUT 1200
+RUN composer install
+RUN composer update
+
+RUN composer require \
+    drupal/address
+
+# Install drush
+RUN composer require drush/drush
 
 EXPOSE 80 443
 CMD ["/wrapper.sh"]

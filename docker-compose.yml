@@ -5,7 +5,7 @@ services:
     container_name: bekker
     restart: unless-stopped
     volumes:
-      - ../../drupal:/www
+      - ./web:/www
     ports:
       - 8686:80
   mysql:
