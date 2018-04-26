@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-docker pull cobers/manp:drupal
+docker pull cobers/manp
 
 docker rm -f manp
-docker run -d --name manp cobers/manp:drupal
+docker run -d --name manp cobers/manp
 if [ -d ./web.old ]; then
   sudo rm -rf ./web.old
 fi
