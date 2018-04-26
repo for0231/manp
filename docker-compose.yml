@@ -1,8 +1,8 @@
 version: '3.1'
 services:
   manp:
-    image: cobers/manp
-    container_name: manp
+    image: cobers/manp:drupal
+    container_name: drupal
     restart: unless-stopped
     volumes:
       - ./web:/www
