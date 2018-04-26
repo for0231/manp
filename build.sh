@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-docker pull cobers/manp
+docker pull cobers/manp:drupal
 
-docker rm -f manp
-docker run -d --name manp cobers/manp
+docker rm -f drupal
+docker run -d --name drupal cobers/manp:drupal
 if [ -d ./web.old ]; then
   sudo rm -rf ./web.old
 fi
@@ -11,6 +11,6 @@ fi
 if [ -d ./web ]; then
   mv ./web ./web.old
 fi
-sudo docker cp manp:/www ./web
-docker stop manp
-docker rm manp
+sudo docker cp drupal:/www ./web
+docker stop drupal
+docker rm drupal
