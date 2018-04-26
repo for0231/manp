@@ -5,7 +5,7 @@ services:
     container_name: manp
     restart: unless-stopped
     volumes:
-      - ./www:/www
+      - ./web:/www
     ports:
       - 8686:80
   mysql:
