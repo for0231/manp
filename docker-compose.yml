@@ -1,11 +1,11 @@
 version: '3.1'
 services:
-  bekker:
-    image: cobers/bekker
-    container_name: bekker
+  manp:
+    image: cobers/manp
+    container_name: manp
     restart: unless-stopped
     volumes:
-      - ../../drupal:/www
+      - ./www:/www
     ports:
       - 8686:80
   mysql:
