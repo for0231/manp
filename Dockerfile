@@ -90,13 +90,11 @@ RUN rm -rf /etc/localtime \
     && echo 'sendmail_path = "/usr/sbin/ssmtp -t "' > /etc/php7/conf.d/mail.ini \
     && sed -i 's/mailhub=mail/mailhub=mail.domain.com\:81/g' /etc/ssmtp/ssmtp.conf
 
-COPY ./conf/nginx.conf /etc/nginx/nginx.conf
-COPY index.php /www/index.php
-COPY ./bin/start_nginx.sh /start_nginx.sh
-COPY ./bin/start_php-fpm.sh /start_php-fpm.sh
-COPY ./bin/wrapper.sh /wrapper.sh
+ADD conf/nginx.conf /etc/nginx/nginx.conf
+ADD index.php /www/index.php
+ADD bin /opt/bin
 
-RUN chmod +x /start_nginx.sh /start_php-fpm.sh /wrapper.sh
+RUN chmod +x -R /opt/bin
 
 # Drupal
 RUN rm -rf /www
@@ -113,4 +111,4 @@ RUN composer require \
 RUN composer require drush/drush
 
 EXPOSE 80 443
-CMD ["/wrapper.sh"]
+CMD ["/opt/bin/wrapper.sh"]
